@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nightfire_Source_Update_Builder", "Nightfire_Source_Update_Builder\Nightfire_Source_Update_Builder.csproj", "{A89A251C-E76F-407D-BCCE-8319285A8E46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A89A251C-E76F-407D-BCCE-8319285A8E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A89A251C-E76F-407D-BCCE-8319285A8E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A89A251C-E76F-407D-BCCE-8319285A8E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A89A251C-E76F-407D-BCCE-8319285A8E46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

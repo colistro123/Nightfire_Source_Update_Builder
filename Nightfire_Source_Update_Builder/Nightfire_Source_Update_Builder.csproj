@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeSets.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="DirectorySearch.cs" />
     <Compile Include="Hashing.cs" />
     <Compile Include="Program.cs" />

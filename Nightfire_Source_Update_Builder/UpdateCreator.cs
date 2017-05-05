@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Xml;
 
 namespace Nightfire_Source_Update_Builder
 {
@@ -90,6 +87,9 @@ namespace Nightfire_Source_Update_Builder
                 if (File.Exists(chSet.genSetName(sDir, "integrity.xml")))
                     chSet.checkForDeletedFiles_Dirs(chSet.genSetName(sDir, "integrity.xml"));
 
+                //Create the directory (if it doesn't exist) where we'll have our changesets
+                System.IO.Directory.CreateDirectory(String.Format("{0}-changesets", sDir));
+                
                 //Finally
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, String.Format("changeset_{0}.xml", version))/*String.Format("nightfiresource-changesets/changeset_{0}.xml", version)*/, ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);

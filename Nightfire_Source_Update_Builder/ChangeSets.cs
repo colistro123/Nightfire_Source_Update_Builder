@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
@@ -20,7 +19,7 @@ namespace Nightfire_Source_Update_Builder
 
         public string genSetName(string dirName, string fileName)
         {
-            return String.Format("{0}-changesets/{1}", dirName, fileName);
+            return string.Format("{0}-changesets/{1}", dirName, fileName);
         }
         //Only for the integrity file
         public bool LoadIntegrityfile(string dirName)
@@ -168,7 +167,7 @@ namespace Nightfire_Source_Update_Builder
             MatchesResult result = MatchesResult.matches_none;
             foreach (ChangeSetC chSet in getAppropriateListForType(type))
             {
-                if (file == chSet.filename)
+                if(Path.GetFullPath(file.ToLower()) == Path.GetFullPath(chSet.filename.ToLower()))
                 {
                     result |= MatchesResult.matches_filename;
                     if (chSet.hash == hash)

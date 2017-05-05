@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 //http://stackoverflow.com/questions/7296956/how-to-list-all-sub-directories-in-a-directory

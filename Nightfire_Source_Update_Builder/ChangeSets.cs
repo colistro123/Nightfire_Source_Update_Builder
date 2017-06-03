@@ -19,7 +19,7 @@ namespace Nightfire_Source_Update_Builder
 
         public string genSetName(string dirName, string fileName)
         {
-            return string.Format("{0}-changesets/{1}", dirName, fileName);
+            return $"{dirName}-changesets/{fileName}";
         }
         //Only for the integrity file
         public bool LoadIntegrityfile(string dirName)
@@ -87,7 +87,7 @@ namespace Nightfire_Source_Update_Builder
             foreach (XElement level1Element in XElement.Load(filePath).Elements("ContentFile"))
             {
                 string xmlHash = level1Element.Attribute("hash").Value;
-                string xmlFilePath = level1Element.Attribute("filename").Value;
+                string xmlFilePath = Path.GetFullPath(level1Element.Attribute("filename").Value); //Unix-Win path-fixes
                 string xmlFileSize = level1Element.Attribute("filesize").Value;
                 string xmlMode = level1Element.Attribute("mode").Value;
                 string xmlType = level1Element.Attribute("type").Value;
@@ -162,6 +162,22 @@ namespace Nightfire_Source_Update_Builder
             }
             return curList;
         }
+        public MatchesResult DoesCurCHSetFileHashMatchFileInDir(ChangeSetC chSet, string rootDir, string file, string hash)
+        {
+            MatchesResult result = MatchesResult.matches_none;
+            string changesetFilename = chSet.filename.ToLower().Replace("nightfiresource/", "");
+            string path = rootDir + changesetFilename;
+            if (Path.GetFullPath(file.ToLower()) == Path.GetFullPath(path.ToLower()))
+            {
+                result |= MatchesResult.matches_filename;
+                if (chSet.hash == hash)
+                {
+                    result |= MatchesResult.matches_hash;
+                }
+            }
+            return result;
+        }
+
         public MatchesResult DoesFileHashMatch(CHANGESET_TYPES type, string file, string hash)
         {
             MatchesResult result = MatchesResult.matches_none;

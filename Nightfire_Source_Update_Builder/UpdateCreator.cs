@@ -50,6 +50,7 @@ namespace Nightfire_Source_Update_Builder
                     //If the changeset list exists
                     if (changeSetExists)
                     {
+                        //Huge perf hit, requires optimization... Although I can't see a better way to optimize this right now...
                         ChangeSets.MatchesResult flags = chSet.DoesFileHashMatch(ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_OLD, file, SHA1Hash);
                         bool matches_hash = (flags & ChangeSets.MatchesResult.matches_hash) != 0;
                         bool matches_filename = (flags & ChangeSets.MatchesResult.matches_filename) != 0;
@@ -88,11 +89,13 @@ namespace Nightfire_Source_Update_Builder
                     chSet.checkForDeletedFiles_Dirs(chSet.genSetName(sDir, "integrity.xml"));
 
                 //Create the directory (if it doesn't exist) where we'll have our changesets
-                System.IO.Directory.CreateDirectory(String.Format("{0}-changesets", sDir));
+                System.IO.Directory.CreateDirectory($"{sDir}-changesets");
                 
                 //Finally
-                chSet.WriteChangeSetToXML(chSet.genSetName(sDir, String.Format("changeset_{0}.xml", version))/*String.Format("nightfiresource-changesets/changeset_{0}.xml", version)*/, ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
+                chSet.WriteChangeSetToXML(chSet.genSetName(sDir, $"changeset_{version}.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);
+
+                //And last but not least, tell cloudflare to get rid of caches...
             }
             catch (System.Exception ex)
             {

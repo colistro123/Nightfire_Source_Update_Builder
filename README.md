@@ -1,6 +1,11 @@
 Update-Builder
 ====================
 
+NuGet Dependencies
+---------------------
+- Newtonsoft.Json
+- ILRepack
+
 Planning:
 ---------------------
 - Use cloudflare to save bandwidth :-)

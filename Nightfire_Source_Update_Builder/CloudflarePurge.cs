@@ -71,7 +71,7 @@ namespace Nightfire_Source_Update_Builder
                 // parse the command line
                 extra = options.Parse(args);
 
-                if (IsAPIKeyOrEmailEmpty())
+                if (getAPIShouldPurgeCloudflare() && IsAPIKeyOrEmailEmpty())
                 {
                     Console.WriteLine(CLOUDFLARE_EMPTY_STRING_ERROR_MESSAGE);
                     return false;

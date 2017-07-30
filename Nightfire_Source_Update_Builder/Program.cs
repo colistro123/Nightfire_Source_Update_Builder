@@ -44,8 +44,15 @@ namespace Nightfire_Source_Update_Builder
     {
         static void Main(string[] args)
         {
-            var updateObj = new UpdateCreator();
-            updateObj.StartParsingMainDir();
+            //CompressionTest.BeginCompressDecompTests();
+#if TRUE
+            CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();
+            if (cf.SetupCloudflareCredentials(args))
+            {
+                var updateObj = new UpdateCreator();
+                updateObj.StartParsingMainDir();
+            }
+#endif
         }
     }
 }

@@ -1,6 +1,0 @@
-[submodule "vendor/il-repack"]
-	path = vendor/il-repack
-	url = https://github.com/gluck/il-repack.git
-[submodule "vendor/Json.Net"]
-	path = vendor/Json.Net
-	url = https://github.com/JamesNK/Newtonsoft.Json.git

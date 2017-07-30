@@ -3,9 +3,9 @@ Update-Builder
 
 NuGet Dependencies
 ---------------------
-- Mono.Options
 - Newtonsoft.Json
 - ILRepack
+- Mono.Options
 
 Planning:
 ---------------------

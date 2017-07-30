@@ -96,6 +96,9 @@ namespace Nightfire_Source_Update_Builder
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);
 
                 //And last but not least, tell cloudflare to get rid of caches...
+                CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();
+                if (cf.getAPIShouldPurgeCloudflare())
+                    cf.PurgeCache(cf.getAPIEmail(), cf.getAPIKey());
             }
             catch (System.Exception ex)
             {

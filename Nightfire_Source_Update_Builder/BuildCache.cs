@@ -66,16 +66,17 @@ namespace Nightfire_Source_Update_Builder
             Directory.CreateDirectory(Path.GetFullPath(DirName)); //Create the dir with the changeset name one directory back
         }
 
-        public static void DoByFileEditMode(ChangeSets chSet, ChangeSets.ChangeSetC item, string FilePath)
+        public static void DoByFileEditMode(ChangeSets chSet, ChangeSets.ChangeSetC item, string cacheDirName)
         {
             switch (item.mode)
             {
                 case "add":
                     FileInfo fStream = new FileInfo(item.filename);
-                    Compressor.CompressFile(fStream, FilePath);
+                    Compressor.CompressFile(fStream, cacheDirName);
                     break;
                 case "delete":
-                    File.Delete(FilePath);
+                    string fPath = Compressor.getFilePathAndCompressionAppended($"{Path.Combine(cacheDirName, item.filename.ToString())}");
+                    File.Delete(fPath);
                     break;
             }
         }

@@ -29,6 +29,11 @@ namespace Nightfire_Source_Update_Builder
             return compressionType;
         }
 
+        static public string getFilePathAndCompressionAppended(string filePath)
+        {
+            return $"{filePath}.{Compressor.DEFAULT_COMPRESSION_TYPE}";
+        }
+
         /* toMainTreeDir is the root folder where we want to place all the files e.g: nightfiresource */
         static public void CompressFile(FileInfo fileToCompress, string toMainTreeDir)
         {

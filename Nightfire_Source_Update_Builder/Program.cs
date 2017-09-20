@@ -45,12 +45,17 @@ namespace Nightfire_Source_Update_Builder
         static void Main(string[] args)
         {
             //CompressionTest.BeginCompressDecompTests();
+            HookFunctions.RunAll(args); //Run all the functions
 #if TRUE
-            CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();
-            if (cf.SetupCloudflareCredentials(args))
+            //Get what SetupCloudflareCredentials returned...
+            if ((bool)HookFunctions.GetReturnValueFromFunc("SetupCloudflareCredentials"))
             {
-                var updateObj = new UpdateCreator();
-                updateObj.StartParsingMainDir();
+                //What's our target directory name / what are we building?
+                if ((bool)HookFunctions.GetReturnValueFromFunc("CouldSetupReleaseBuildName"))
+                {
+                    var updateObj = new UpdateCreator();
+                    updateObj.StartParsingMainDir();
+                }
             }
 #endif
         }

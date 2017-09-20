@@ -40,7 +40,7 @@ namespace Nightfire_Source_Update_Builder
 
                             }
                         }
-                        FileInfo info = new FileInfo(directoryPath + "\\" + fileToCompress.Name + ".gz");
+                        FileInfo info = new FileInfo(Path.GetFullPath(Path.Combine(directoryPath, fileToCompress.Name) + ".gz"));
                         Console.WriteLine("Compressed {0} from {1} to {2} bytes.",
                         fileToCompress.Name, fileToCompress.Length.ToString(), info.Length.ToString());
                     }
@@ -66,5 +66,13 @@ namespace Nightfire_Source_Update_Builder
                 }
             }
         }
+    }
+}
+
+public static partial class Hooks
+{
+    public static void HookedFunc2(string[] args)
+    {
+        Console.Write("Test {0}", args[0]);
     }
 }

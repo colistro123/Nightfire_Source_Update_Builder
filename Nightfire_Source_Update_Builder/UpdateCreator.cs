@@ -26,7 +26,8 @@ namespace Nightfire_Source_Update_Builder
         */
         private void DirGenerateCaches(string sDir, int version)
         {
-            var chSet = new ChangeSets();
+            var chSet = ChangeSets.getChangeSetsClassPtr(sDir);
+
             if (version > minimal_ver)
             {
                 //int chVersion = version - 1;
@@ -94,6 +95,11 @@ namespace Nightfire_Source_Update_Builder
                 //Finally
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, $"changeset_{version}.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
                 chSet.WriteChangeSetToXML(chSet.genSetName(sDir, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);
+
+                /* Once everything's done, call BuildCache.Init to compress and copy the files over to the new directory.
+                    Evaluate if we're copying from the new changeset or the entire integrity file, it should always be CHANGESET_NEW since full integrity is added on it at first but whatever...
+                */
+                BuildCache.GenerateCacheFromChangeset(chSet, changeSetExists);
 
                 //And last but not least, tell cloudflare to get rid of caches...
                 CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();

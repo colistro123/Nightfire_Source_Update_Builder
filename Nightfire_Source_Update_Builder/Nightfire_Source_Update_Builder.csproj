@@ -66,9 +66,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildCache.cs" />
     <Compile Include="ChangeSets.cs" />
+    <Compile Include="Compressor.cs" />
     <Compile Include="CloudflarePurge.cs" />
     <Compile Include="CompressionTest.cs" />
+    <Compile Include="HookFunctions.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="DirectorySearch.cs" />
     <Compile Include="Hashing.cs" />
@@ -79,7 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

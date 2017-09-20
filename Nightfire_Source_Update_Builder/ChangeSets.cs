@@ -10,11 +10,46 @@ namespace Nightfire_Source_Update_Builder
 {
     class ChangeSets
     {
+        private static ChangeSets classPtr = null; //Initialize to null by default
+        public static string mainChangeSetDir = String.Empty;
+
         public enum CHANGESET_TYPES
         {
             CHANGESET_INTEGRITY_OLD = 0, //If it's an old integrity changeset we're loading
             CHANGESET_NEW = 1,
             CHANGESET_INTEGRITY_CURRENT = 2,
+        }
+
+        //Use this to access the class pointer / allocate, this is kind of like a Singleton
+        public static ChangeSets getChangeSetsClassPtr(string mainDir = "")
+        {
+            if (classPtr == null)
+            {
+                if(mainDir.Length < 1)
+                    throw new ArgumentException("Directory to parse (mainDir) must not be null unless mainChangeSetDir is valid.", "mainDir");
+
+                classPtr = new ChangeSets(mainDir);
+            }
+            return classPtr;
+        }
+
+        public ChangeSets(string mainDir)
+        {
+            if (mainDir.Length < 1)
+                throw new ArgumentException("Directory to parse (mainDir) must not be null.", "mainDir");
+
+            classPtr = this; //Set class ptr to this
+            setMainChangeSetDir(mainDir); //Setup the main directory we're working on
+        }
+
+        public void setMainChangeSetDir(string dirName)
+        {
+            mainChangeSetDir = dirName;
+        }
+
+        public string getMainChangeSetDir()
+        {
+            return mainChangeSetDir;
         }
 
         public string genSetName(string dirName, string fileName)
@@ -87,7 +122,7 @@ namespace Nightfire_Source_Update_Builder
             foreach (XElement level1Element in XElement.Load(filePath).Elements("ContentFile"))
             {
                 string xmlHash = level1Element.Attribute("hash").Value;
-                string xmlFilePath = Path.GetFullPath(level1Element.Attribute("filename").Value); //Unix-Win path-fixes
+                string xmlFilePath = Path.Combine(level1Element.Attribute("filename").Value); //Unix-Win path-fixes
                 string xmlFileSize = level1Element.Attribute("filesize").Value;
                 string xmlMode = level1Element.Attribute("mode").Value;
                 string xmlType = level1Element.Attribute("type").Value;
@@ -127,6 +162,7 @@ namespace Nightfire_Source_Update_Builder
                     writer.WriteAttributeString("filesize", chSet.filesize);
                     writer.WriteAttributeString("mode", chSet.mode);
                     writer.WriteAttributeString("type", chSet.filetype);
+                    writer.WriteAttributeString("compType", chSet.compressionType);
 
                     writer.WriteEndElement();
                 }
@@ -254,8 +290,9 @@ namespace Nightfire_Source_Update_Builder
             data.filetype = filetype;
             data.filesize = filesize;
             data.mode = mode;
+            data.compressionType = Compressor.getCompressionForFileOrDirType(filetype);
 
-            switch(type)
+            switch (type)
             {
                 case CHANGESET_TYPES.CHANGESET_NEW:
                     ChangeSetListNew.Add(data);
@@ -274,11 +311,12 @@ namespace Nightfire_Source_Update_Builder
 
         public class ChangeSetC
         {
-            public string hash { set; get; }
+            public string hash { set; get; } /* SHA CRC file hash */
             public string filename { set; get; }
             public string filetype { set; get; }
             public string filesize { set; get; }
             public string mode { set; get; }
+            public string compressionType { set; get; } /* compressionType extension, gz, zip, etc */
         }
 
         public static List<ChangeSetC> ChangeSetListIntegrityOld = new List<ChangeSetC>();

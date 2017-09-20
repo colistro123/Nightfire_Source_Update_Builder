@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Mono.Options;
 
+using Nightfire_Source_Update_Builder;
 namespace Nightfire_Source_Update_Builder
 {
     class CloudflarePurge
@@ -154,5 +155,14 @@ namespace Nightfire_Source_Update_Builder
                 Console.WriteLine($"Purged cloudflare: {purgeResult.success}");
             }
         }
+    }
+}
+
+public static partial class Hooks
+{
+    public static bool SetupCloudflareCredentials(string[] args)
+    {
+        CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();
+        return cf.SetupCloudflareCredentials(args);
     }
 }

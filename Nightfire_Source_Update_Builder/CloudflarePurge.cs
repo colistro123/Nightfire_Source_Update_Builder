@@ -17,6 +17,15 @@ namespace Nightfire_Source_Update_Builder
         private static string APIEmail = String.Empty;
         private static string APIKey = String.Empty;
         private static bool APIShouldPurgeCloudflare = true; //Specifies whether we should purge cloudflare or not, used in case we want to do tests and don't want to purge the entire site...
+        private static bool shouldShowHelp = false; //Let this be a local function variable, set when the command line is parsed...
+        
+        // these are the available options, note that they set the variables
+        public static OptionSet options = new OptionSet {
+                { "nocloudflare", "Tells the program to not purge cloudflare",  v => { APIShouldPurgeCloudflare = false; } },
+                { "e|email=", "the cloudflare user email.", n => APIEmail = n },
+                { "k|apikey=", "API Key", v => APIKey = v },
+                { "h|help", "show this message and exit", h => { shouldShowHelp = h != null; } },
+        };
 
         //Use this to access the class pointer / allocate, this is kind of like a Singleton
         public static CloudflarePurge getCloudflarePurgeClassPtr()
@@ -49,23 +58,13 @@ namespace Nightfire_Source_Update_Builder
         }
 
         /* Shows help for all available parameters */
-        public void showCommandParametersHelp(OptionSet options)
+        public static void showCommandParametersHelp(OptionSet options)
         {
             Console.WriteLine("Help:\n");
             options.WriteOptionDescriptions(Console.Out);
         }
 
         public bool SetupCloudflareCredentials(string[] args) {
-            bool shouldShowHelp = false; //Let this be a local function variable, set when the command line is parsed...
-
-            // these are the available options, note that they set the variables
-            var options = new OptionSet {
-                { "nocloudflare", "Tells the program to not purge cloudflare",  v => { APIShouldPurgeCloudflare = false; } },
-                { "e|email=", "the cloudflare user email.", n => APIEmail = n },
-                { "k|apikey=", "API Key", v => APIKey = v },
-                { "h|help", "show this message and exit", h => { shouldShowHelp = h != null; } },
-            };
-
             List<string> extra;
             try
             {

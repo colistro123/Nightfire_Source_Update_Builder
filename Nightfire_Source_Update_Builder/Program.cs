@@ -38,12 +38,20 @@
                 - If one of them is different, re-download from the server.
 */
 
+using System;
+
 namespace Nightfire_Source_Update_Builder
 {
     class Program
     {
         static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                CloudflarePurge.showCommandParametersHelp(CloudflarePurge.options);
+                throw new ArgumentException($"The parameters (args) must not be null, forward some parameters to the application. Execution will now stop.", "args");
+            }
+
             //CompressionTest.BeginCompressDecompTests();
             HookFunctions.RunAll(args); //Run all the functions
 #if TRUE

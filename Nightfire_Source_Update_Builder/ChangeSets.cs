@@ -219,7 +219,7 @@ namespace Nightfire_Source_Update_Builder
             MatchesResult result = MatchesResult.matches_none;
             foreach (ChangeSetC chSet in getAppropriateListForType(type))
             {
-                if(Path.GetFullPath(file.ToLower()) == Path.GetFullPath(chSet.filename.ToLower()))
+                if (Path.GetFullPath(file.ToLower()) == Path.GetFullPath(chSet.filename.ToLower()))
                 {
                     result |= MatchesResult.matches_filename;
                     if (chSet.hash == hash)

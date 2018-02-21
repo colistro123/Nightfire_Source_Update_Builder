@@ -12,18 +12,19 @@ namespace Nightfire_Source_Update_Builder
     {
         public const string DEFAULT_COMPRESSION_TYPE = "gz";
         public const string DIRECTORY_NO_COMPRESSION = "0";
+        public const string FILE_NO_COMPRESSION = "0";
 
         /* Gets the default compression type for a file or folder as an extension */
         static public string getCompressionForFileOrDirType(string filetype)
         {
-            string compressionType = Compressor.DEFAULT_COMPRESSION_TYPE;
+            string compressionType = DEFAULT_COMPRESSION_TYPE;
             switch (filetype)
             {
                 case "file":
-                    compressionType = Compressor.DEFAULT_COMPRESSION_TYPE;
+                    compressionType = BuildCache.performCompression ? FILE_NO_COMPRESSION : DEFAULT_COMPRESSION_TYPE; //looks out of place, maybe fix later? "BuildCache"
                     break;
                 case "directory":
-                    compressionType = Compressor.DIRECTORY_NO_COMPRESSION;
+                    compressionType = DIRECTORY_NO_COMPRESSION;
                     break;
             }
             return compressionType;
@@ -31,7 +32,7 @@ namespace Nightfire_Source_Update_Builder
 
         static public string getFilePathAndCompressionAppended(string filePath)
         {
-            return $"{filePath}.{Compressor.DEFAULT_COMPRESSION_TYPE}";
+            return BuildCache.performCompression ? $"{filePath}.{DEFAULT_COMPRESSION_TYPE}" : filePath; //looks out of place, maybe fix later? "BuildCache"
         }
 
         /* toMainTreeDir is the root folder where we want to place all the files e.g: nightfiresource */

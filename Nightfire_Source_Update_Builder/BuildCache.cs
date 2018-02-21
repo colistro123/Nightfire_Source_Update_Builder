@@ -14,6 +14,9 @@ namespace Nightfire_Source_Update_Builder
         private static string BuildName = String.Empty;
         private static string BUILD_NAME_EMPTY_STRING_ERROR_MESSAGE = "Got empty build name, stopping... Available options are master / upcoming, try --help?";
         public static string INVALID_STRING = "Invalid";
+        public static bool genDiffsOnly = false;
+        public static bool performCompression = true;
+
         public static bool isBuildNameNullOrEmpty()
         {
             return BuildName.Length < 1;
@@ -39,6 +42,7 @@ namespace Nightfire_Source_Update_Builder
             // these are the available options, note that they set the variables
             var options = new OptionSet {
                 { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
+                { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; } },
             };
 
             List<string> extra;
@@ -66,16 +70,30 @@ namespace Nightfire_Source_Update_Builder
             Directory.CreateDirectory(Path.GetFullPath(DirName)); //Create the dir with the changeset name one directory back
         }
 
+        public static void evalShouldCompress(string fileName, string cacheDirName)
+        {
+            FileInfo fStream = new FileInfo(fileName);
+            if (performCompression)
+            {
+                Compressor.CompressFile(fStream, cacheDirName);
+            }
+            else
+            {
+                string newFilePath = Path.GetFullPath(Path.Combine(cacheDirName, fileName));
+                Directory.CreateDirectory(Path.GetDirectoryName(newFilePath));
+                fStream.CopyTo(newFilePath);
+            }
+        }
+
         public static void DoByFileEditMode(ChangeSets chSet, ChangeSets.ChangeSetC item, string cacheDirName)
         {
             switch (item.mode)
             {
                 case "add":
-                    FileInfo fStream = new FileInfo(item.filename);
-                    Compressor.CompressFile(fStream, cacheDirName);
+                    evalShouldCompress(item.filename, cacheDirName);
                     break;
                 case "delete":
-                    string fPath = Compressor.getFilePathAndCompressionAppended($"{Path.Combine(cacheDirName, item.filename.ToString())}");
+                    string fPath = Compressor.getFilePathAndCompressionAppended($"{Path.Combine(cacheDirName, item.filename)}");
                     File.Delete(fPath);
                     break;
             }

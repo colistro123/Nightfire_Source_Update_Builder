@@ -15,11 +15,11 @@ namespace Nightfire_Source_Update_Builder
             //FieldInfo[] fields = type.GetFields();
             MethodInfo[] methods = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static);
 
-            foreach (var item in methods)
+            foreach (var func in methods)
             {
-                MethodInfo m = Type.GetType(type.Name).GetMethod(item.Name);
+                MethodInfo m = Type.GetType(type.Name).GetMethod(func.Name);
                 object result = m.Invoke(null, new[] { args });
-                AddToFuncData(item.Name, result);
+                AddToFuncData(func.Name, result);
             }
         }
 

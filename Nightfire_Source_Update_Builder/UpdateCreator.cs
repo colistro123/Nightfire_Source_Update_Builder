@@ -9,11 +9,6 @@ namespace Nightfire_Source_Update_Builder
     class UpdateCreator
     {
         private const int minimal_ver = 1;
-        public void InitUpdate()
-        {
-            StartParsingMainDir();
-        }
-
         /*
          Loop through the entire directory structure passed by sDir and generate an info.xml containing all the hashes.
          Generating an update

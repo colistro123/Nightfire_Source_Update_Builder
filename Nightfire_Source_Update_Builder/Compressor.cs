@@ -21,7 +21,7 @@ namespace Nightfire_Source_Update_Builder
             switch (filetype)
             {
                 case "file":
-                    compressionType = BuildCache.performCompression ? FILE_NO_COMPRESSION : DEFAULT_COMPRESSION_TYPE; //looks out of place, maybe fix later? "BuildCache"
+                    compressionType = BuildCache.performCompression ? DEFAULT_COMPRESSION_TYPE : FILE_NO_COMPRESSION; //looks out of place, maybe fix later? "BuildCache"
                     break;
                 case "directory":
                     compressionType = DIRECTORY_NO_COMPRESSION;

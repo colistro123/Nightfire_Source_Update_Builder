@@ -27,6 +27,11 @@ namespace Nightfire_Source_Update_Builder
             return !isBuildNameNullOrEmpty() ? BuildName : INVALID_STRING;
         }
 
+        public static string getBuildNameDiffs()
+        {
+            return $"{BuildName}-diffs";
+        }
+
         public static void setBuildName(string name)
         {
             BuildName = name;
@@ -42,7 +47,7 @@ namespace Nightfire_Source_Update_Builder
             // these are the available options, note that they set the variables
             var options = new OptionSet {
                 { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
-                { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; } },
+                { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; setBuildName(genDiffsOnly ? getBuildNameDiffs() : getBuildName()); } },
             };
 
             List<string> extra;

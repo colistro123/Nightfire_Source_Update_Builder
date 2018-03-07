@@ -50,11 +50,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiscordWebhook, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\DiscordWebhook.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Options, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Options.5.3.0.1\lib\net4-client\Mono.Options.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,6 +75,7 @@
     <Compile Include="Compressor.cs" />
     <Compile Include="CloudflarePurge.cs" />
     <Compile Include="CompressionTest.cs" />
+    <Compile Include="DiscordNotify.cs" />
     <Compile Include="HookFunctions.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="DirectorySearch.cs" />
@@ -99,13 +104,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(SolutionDir)\packages\ILRepack.2.0.13\tools\ILRepack.exe" /ndebug /out:"$(TargetDir)\place_packed.exe" "$(TargetDir)$(TargetFileName)" "$(TargetDir)Newtonsoft.Json.dll" "$(TargetDir)Mono.Options.dll" "$(TargetDir)DiscordWebhook.dll"</PostBuildEvent>
+  </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.2.0.13\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.2.0.13\build\ILRepack.props'))" />
   </Target>
-  <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)\packages\ILRepack.2.0.13\tools\ILRepack.exe" /ndebug /out:"$(TargetDir)\place_packed.exe" "$(TargetDir)$(TargetFileName)" "$(TargetDir)Newtonsoft.Json.dll" "$(TargetDir)Mono.Options.dll"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

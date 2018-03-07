@@ -68,11 +68,3 @@ namespace Nightfire_Source_Update_Builder
         }
     }
 }
-
-public static partial class Hooks
-{
-    public static void HookedFunc2(string[] args)
-    {
-        Console.Write("Test {0}", args[0]);
-    }
-}

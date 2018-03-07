@@ -59,10 +59,19 @@ namespace Nightfire_Source_Update_Builder
         //Only for the integrity file
         public bool LoadIntegrityfile(string dirName)
         {
-            String chSetName = genSetName(dirName, "integrity.xml");
-            if (!File.Exists(chSetName))
+            String chSetName = String.Empty;
+
+            //If we're generating diffs and the diffs url is not empty
+            if (BuildCache.genDiffsOnly && !BuildCache.isDiffsURLNullOrEmpty())
             {
-                return false;
+                Console.WriteLine("Getting the remote changeset URL...");
+                chSetName = BuildCache.getDiffsURL();
+            }
+            else
+            {
+                chSetName = genSetName(dirName, "integrity.xml");
+                if (!File.Exists(chSetName))
+                    return false;
             }
 
             PopulateArrFromIntegrityFile(chSetName);
@@ -72,16 +81,22 @@ namespace Nightfire_Source_Update_Builder
 
         public void PopulateArrFromIntegrityFile(string chSetName)
         {
-            StringBuilder result = new StringBuilder();
-            foreach (XElement level1Element in XElement.Load(chSetName).Elements("ContentFile"))
+            try
             {
-                string hash = level1Element.Attribute("hash").Value;
-                string filename = level1Element.Attribute("filename").Value;
-                string filesize = level1Element.Attribute("filesize").Value;
-                string mode = level1Element.Attribute("mode").Value;
-                string type = level1Element.Attribute("type").Value;
+                foreach (XElement level1Element in XElement.Load(chSetName).Elements("ContentFile"))
+                {
+                    string hash = level1Element.Attribute("hash").Value;
+                    string filename = level1Element.Attribute("filename").Value;
+                    string filesize = level1Element.Attribute("filesize").Value;
+                    string mode = level1Element.Attribute("mode").Value;
+                    string type = level1Element.Attribute("type").Value;
 
-                AddToChangeSet(CHANGESET_TYPES.CHANGESET_INTEGRITY_OLD, hash, filename, type, filesize, mode);
+                    AddToChangeSet(CHANGESET_TYPES.CHANGESET_INTEGRITY_OLD, hash, filename, type, filesize, mode);
+                }
+            }
+            catch (Exception ex)
+            { // Just in case the given path or URL is inaccessible...
+                throw new ArgumentException(ex.Message);
             }
         }
 

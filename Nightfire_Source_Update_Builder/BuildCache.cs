@@ -16,6 +16,7 @@ namespace Nightfire_Source_Update_Builder
         public static string INVALID_STRING = "Invalid";
         public static bool genDiffsOnly = false;
         public static bool performCompression = true;
+        public static string diffsUrl = String.Empty;
 
         public static bool isBuildNameNullOrEmpty()
         {
@@ -30,6 +31,16 @@ namespace Nightfire_Source_Update_Builder
         public static string getBuildNameDiffs()
         {
             return $"{BuildName}-diffs";
+        }
+
+        public static bool isDiffsURLNullOrEmpty()
+        {
+            return diffsUrl.Length < 1;
+        }
+
+        public static string getDiffsURL()
+        {
+            return diffsUrl;
         }
 
         public static void setBuildName(string name)
@@ -48,6 +59,7 @@ namespace Nightfire_Source_Update_Builder
             var options = new OptionSet {
                 { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
                 { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; setBuildName(genDiffsOnly ? getBuildNameDiffs() : getBuildName()); } },
+                { "diffsurl=", "Passes a url to download the changeset from",  n => { diffsUrl = n; } },
             };
 
             List<string> extra;

@@ -7,6 +7,10 @@ NuGet Dependencies
 - ILRepack
 - Mono.Options
 
+Other Dependencies
+---------------------
+- [Hellsing / DiscordWebhook](https://github.com/Hellsing/DiscordWebhook "Hellsing / DiscordWebhook")
+
 Planning:
 ---------------------
 - Use cloudflare to save bandwidth :-)

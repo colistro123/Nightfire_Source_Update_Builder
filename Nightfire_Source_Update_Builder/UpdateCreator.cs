@@ -100,6 +100,9 @@ namespace Nightfire_Source_Update_Builder
                 CloudflarePurge cf = CloudflarePurge.getCloudflarePurgeClassPtr();
                 if (cf.getAPIShouldPurgeCloudflare())
                     cf.PurgeCache(cf.getAPIEmail(), cf.getAPIKey());
+
+                //Optionally, notify on discord
+                DiscordNotify.SendDiscordPost("Hi this is a test\nThis is a new line!\nThis is an emoji: \uD83D\uDC26", DiscordNotify.discordId, DiscordNotify.discordToken);
             }
             catch (System.Exception ex)
             {

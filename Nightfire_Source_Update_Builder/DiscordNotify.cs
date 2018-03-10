@@ -3,21 +3,42 @@ using System.Collections.Generic;
 using DiscordWebhook;
 using Nightfire_Source_Update_Builder;
 using Mono.Options;
+using System.Threading.Tasks;
 
 namespace Nightfire_Source_Update_Builder
 {
     class DiscordNotify
     {
-        static public ulong discordId { set; get; }
-        static public string discordToken { set; get; }
-        static public bool discordSetup { set; get; } /* Specifies whether discord tokens were setup or not */
-        static public void SendDiscordPost(string content, ulong id, string token)
+        //Discord has a 2000 character limit, 256 is used for overhead.
+        public const int DISCORD_LIMIT_LENGTH = 2000-256;
+        static public ulong discordId { get; set; }
+        static public string discordToken { get; set; }
+        static public bool discordSetup { get; set; } /* Specifies whether discord tokens were setup or not */
+        static public string discordContent { get; set; }
+        static public string discordMoreURL { get; set; }
+        static public string GetDiscordStringTruncated(string str, int length, out bool truncated)
+        {
+            truncated = false;
+            if (str.Length >= length)
+            {
+                str = str.Substring(0, length);
+                truncated = true;
+            }
+            return str;
+        }
+
+        static public void FormatDiscordPost(string content, string additionalString = "")
+        {
+            discordContent = GetDiscordStringTruncated(content, DISCORD_LIMIT_LENGTH, out bool truncated);
+            discordContent = truncated ? $"{discordContent}...\n{additionalString}" : discordContent;
+        }
+        static public async Task SendDiscordPost(ulong id, string token)
         {
             if (!discordSetup)
                 return;
 
             //If the params were validated but there's no content, don't send anything...
-            if (content.Length < 1 || content == String.Empty)
+            if (discordContent.Length < 1 || discordContent == String.Empty)
             {
                 Console.WriteLine("[DiscordNotify]: No content to send was provided, won't send any notifications to discord.");
                 return;
@@ -25,9 +46,9 @@ namespace Nightfire_Source_Update_Builder
 
             Webhook hook = new Webhook(id, token)
             {
-                Content = content
+                Content = discordContent
             };
-            hook.Send(content);
+            await hook.Send(discordContent);
         }
 
         static public bool SetupDiscordDetails(string[] args)
@@ -35,6 +56,7 @@ namespace Nightfire_Source_Update_Builder
             var options = new OptionSet {
                 { "discordid=", "The discord id.",  (ulong idParam) => discordId = idParam },
                 { "discordtoken=", "The discord token.",  tokenParam => discordToken = tokenParam },
+                { "discordmoreurl=", "The url to read more about said post.",  urlParam => discordMoreURL = urlParam },
             };
 
             List<string> extra;

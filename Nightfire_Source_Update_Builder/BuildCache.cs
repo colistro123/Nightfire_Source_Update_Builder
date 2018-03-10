@@ -17,6 +17,7 @@ namespace Nightfire_Source_Update_Builder
         public static bool genDiffsOnly = false;
         public static bool performCompression = true;
         public static string diffsUrl = String.Empty;
+        public static string versionFileName = "version.txt";
 
         public static bool isBuildNameNullOrEmpty()
         {

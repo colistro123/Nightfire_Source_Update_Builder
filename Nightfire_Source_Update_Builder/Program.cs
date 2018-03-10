@@ -61,7 +61,7 @@ namespace Nightfire_Source_Update_Builder
                 if ((bool)HookFunctions.GetReturnValueFromFunc("CouldSetupReleaseBuildName"))
                 {
                     var updateObj = new UpdateCreator();
-                    updateObj.StartParsingMainDir();
+                    updateObj.StartParsingMainDir(args);
                 }
             }
 #endif

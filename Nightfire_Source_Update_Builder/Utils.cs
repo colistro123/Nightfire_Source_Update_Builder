@@ -30,5 +30,9 @@ namespace Nightfire_Source_Update_Builder
             }
             return slash;
         }
+        public static string Repeat(char c, int n)
+        {
+            return new string(c, n);
+        }
     }
 }

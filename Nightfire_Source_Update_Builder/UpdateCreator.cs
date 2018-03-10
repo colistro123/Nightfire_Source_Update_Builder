@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text;
+using Mono.Options;
 
 namespace Nightfire_Source_Update_Builder
 {
@@ -9,6 +11,7 @@ namespace Nightfire_Source_Update_Builder
     class UpdateCreator
     {
         private const int minimal_ver = 1;
+        static public string NO_BASENAME_ERROR = "No basename was provided, you can provide such using -b or -basename, E.G. -b \"nightfiresource_upcoming\"";
         /*
          Loop through the entire directory structure passed by sDir and generate an info.xml containing all the hashes.
          Generating an update
@@ -19,14 +22,14 @@ namespace Nightfire_Source_Update_Builder
             - Generate the integrity file which will contain all the files and their hashes.
             - Keep track of deleted / created folders.
         */
-        private void DirGenerateCaches(string sDir, int version)
+        private void DirGenerateCaches(string origDir, int version)
         {
-            var chSet = ChangeSets.getChangeSetsClassPtr(sDir);
+            var chSet = ChangeSets.getChangeSetsClassPtr(origDir);
+            var chSetFolderName = BuildCache.getMainCacheDirectory(chSet.getMainChangeSetDir());
 
             if (version > minimal_ver)
             {
-                //int chVersion = version - 1;
-                if (!chSet.LoadIntegrityfile(sDir))
+                if (!chSet.LoadIntegrityfile(chSetFolderName))
                 {
                     Console.WriteLine("No integrity file yet...");
                 }
@@ -34,9 +37,12 @@ namespace Nightfire_Source_Update_Builder
 
             bool changeSetExists = chSet.DoesChangeSetExist(ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_OLD);
 
+            DiscordNotify.FormatDiscordPost($"\ud83d\udd27 Building a new {chSetFolderName} update!");
+            DiscordNotify.SendDiscordPost(DiscordNotify.discordId, DiscordNotify.discordToken).Wait();
+
             try
             {
-                IEnumerable<string> files = Directory.EnumerateFiles(sDir, "*.*", SearchOption.AllDirectories);
+                IEnumerable<string> files = Directory.EnumerateFiles(origDir, "*.*", SearchOption.AllDirectories);
                 foreach (string file in files)
                 {
                     var hashFuncs = new Hashing();
@@ -69,7 +75,7 @@ namespace Nightfire_Source_Update_Builder
                 }
 
                 //Get the directory structure
-                var directories = DirectorySearch.GetDirectories(sDir, "*", SearchOption.AllDirectories);
+                var directories = DirectorySearch.GetDirectories(origDir, "*", SearchOption.AllDirectories);
                 foreach (string dir in directories)
                 {
                     //Add every single directory to our current integrity file
@@ -77,19 +83,19 @@ namespace Nightfire_Source_Update_Builder
                 }
 
                 //Check for newly added folders
-                if (File.Exists(chSet.genSetName(sDir, "integrity.xml")))
-                    chSet.checkForNewlyAddedFolders(chSet.genSetName(sDir, "integrity.xml"), sDir);
+                if (File.Exists(chSet.genSetName(chSetFolderName, "integrity.xml")))
+                    chSet.checkForNewlyAddedFolders(origDir);
 
                 //Check for any deleted files and folders by comparing the last integrity file to the actual directory structure (Adds to the new changeset list only)
-                if (File.Exists(chSet.genSetName(sDir, "integrity.xml")))
-                    chSet.checkForDeletedFiles_Dirs(chSet.genSetName(sDir, "integrity.xml"));
+                if (File.Exists(chSet.genSetName(chSetFolderName, "integrity.xml")))
+                    chSet.checkForDeletedFiles_Dirs(chSet.genSetName(chSetFolderName, "integrity.xml"));
 
                 //Create the directory (if it doesn't exist) where we'll have our changesets
-                System.IO.Directory.CreateDirectory($"{sDir}-changesets");
+                System.IO.Directory.CreateDirectory($"{chSetFolderName}-changesets");
                 
                 //Finally
-                chSet.WriteChangeSetToXML(chSet.genSetName(sDir, $"changeset_{version}.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
-                chSet.WriteChangeSetToXML(chSet.genSetName(sDir, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);
+                chSet.WriteChangeSetToXML(chSet.genSetName(chSetFolderName, $"changeset_{version}.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_NEW);
+                chSet.WriteChangeSetToXML(chSet.genSetName(chSetFolderName, "integrity.xml"), ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_CURRENT);
 
                 /* Once everything's done, call BuildCache.Init to compress and copy the files over to the new directory.
                     Evaluate if we're copying from the new changeset or the entire integrity file, it should always be CHANGESET_NEW since full integrity is added on it at first but whatever...
@@ -102,16 +108,85 @@ namespace Nightfire_Source_Update_Builder
                     cf.PurgeCache(cf.getAPIEmail(), cf.getAPIKey());
 
                 //Optionally, notify on discord
-                DiscordNotify.SendDiscordPost("Hi this is a test\nThis is a new line!\nThis is an emoji: \uD83D\uDC26", DiscordNotify.discordId, DiscordNotify.discordToken);
+                TryReadAndSendDiscordUpdateChangelog(chSet, chSetFolderName, version);
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
-
-        public void StartParsingMainDir()
+        void TryReadAndSendDiscordUpdateChangelog(ChangeSets chSet, string sDir, int version)
         {
+            //Don't even bother...
+            if (!DiscordNotify.discordSetup)
+                return;
+
+            //Get the changelog data
+            string changeLog = GetVersioningFileData();
+            //Format the version filename
+            string setName = $"{chSet.genSetName(sDir, $"version_{version}.txt")}";
+            //Write the version file
+            File.WriteAllText(setName, changeLog);
+            //URL
+            Uri baseUri = new Uri(DiscordNotify.discordMoreURL);
+            Uri fullUri = new Uri(baseUri, setName);
+            //Format the post
+            DiscordNotify.FormatDiscordPost(String.Format("\ud83d\udd27 An update of version {0} has been released to {1}!{2}{3}",
+                version,
+                BuildCache.getMainCacheDirectory(chSet.getMainChangeSetDir()),
+                Utils.Repeat('\n', 2),
+                changeLog), $"Read the the full changelog at: {fullUri}");
+            //Send it
+            DiscordNotify.SendDiscordPost(DiscordNotify.discordId, DiscordNotify.discordToken).Wait();
+        }
+        public string GetVersioningFileData()
+        {
+            String fileData = String.Empty;
+            if (File.Exists(BuildCache.versionFileName))
+            {
+                var lines = File.ReadLines(BuildCache.versionFileName, Encoding.UTF8);
+                foreach (var line in lines)
+                {
+                    fileData += $"{line}\n";
+                }
+            }
+            return fileData.Length > 0 ? fileData : "No changelog was provided.";
+        }
+        public void MoveIntoProjectDir(string dirName)
+        {
+            if (!Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+
+            Directory.SetCurrentDirectory(dirName); //Move into the directory
+        }
+        public void StartParsingMainDir(string[] args)
+        {
+            string BaseName = String.Empty;
+            // these are the available options, note that they set the variables
+            var options = new OptionSet {
+                { "b|basename=", "The main directory to look into.",  n => { BaseName = n.Length < 1 ? String.Empty : n; } },
+            };
+
+            List<string> extra;
+            try
+            {
+                // parse the command line
+                extra = options.Parse(args);
+
+                if (BaseName.Length < 1)
+                {
+                    Console.WriteLine(NO_BASENAME_ERROR);
+                }
+            }
+            catch (OptionException e)
+            {
+                // output some error message
+                Console.WriteLine("Didn't receive any valid parameters. " + NO_BASENAME_ERROR);
+                Console.WriteLine("Try `--help' for more information.");
+            }
+
+            MoveIntoProjectDir(BaseName); //Move into the directory
+
             var xmlFuncs = new XMLMgr();
             if (!File.Exists("caches.xml"))
             {

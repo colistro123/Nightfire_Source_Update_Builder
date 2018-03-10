@@ -112,7 +112,7 @@ namespace Nightfire_Source_Update_Builder
             return false;
         }
 
-        public void checkForNewlyAddedFolders(string filePath, string currentDir)
+        public void checkForNewlyAddedFolders(string currentDir)
         {
             Console.WriteLine("Checking for any new directories...");
 

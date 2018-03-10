@@ -83,6 +83,7 @@
     <Compile Include="CloudflarePurge.cs" />
     <Compile Include="CompressionTest.cs" />
     <Compile Include="DiscordNotify.cs" />
+    <Compile Include="HelpParameters.cs" />
     <Compile Include="HookFunctions.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="DirectorySearch.cs" />

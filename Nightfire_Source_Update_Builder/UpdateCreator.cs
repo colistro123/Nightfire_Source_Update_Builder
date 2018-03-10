@@ -12,6 +12,10 @@ namespace Nightfire_Source_Update_Builder
     {
         private const int minimal_ver = 1;
         static public string NO_BASENAME_ERROR = "No basename was provided, you can provide such using -b or -basename, E.G. -b \"nightfiresource_upcoming\"";
+        static public string BaseName = String.Empty;
+        public static OptionSet options = new OptionSet {
+                { "b|basename=", "The main directory to look into.",  n => { BaseName = n.Length < 1 ? String.Empty : n; } },
+        };
         /*
          Loop through the entire directory structure passed by sDir and generate an info.xml containing all the hashes.
          Generating an update
@@ -161,12 +165,6 @@ namespace Nightfire_Source_Update_Builder
         }
         public void StartParsingMainDir(string[] args)
         {
-            string BaseName = String.Empty;
-            // these are the available options, note that they set the variables
-            var options = new OptionSet {
-                { "b|basename=", "The main directory to look into.",  n => { BaseName = n.Length < 1 ? String.Empty : n; } },
-            };
-
             List<string> extra;
             try
             {

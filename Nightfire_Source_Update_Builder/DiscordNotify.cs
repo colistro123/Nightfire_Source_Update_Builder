@@ -16,6 +16,11 @@ namespace Nightfire_Source_Update_Builder
         static public bool discordSetup { get; set; } /* Specifies whether discord tokens were setup or not */
         static public string discordContent { get; set; }
         static public string discordMoreURL { get; set; }
+        public static OptionSet options = new OptionSet {
+                { "discordid=", "The discord id.",  (ulong idParam) => discordId = idParam },
+                { "discordtoken=", "The discord token.",  tokenParam => discordToken = tokenParam },
+                { "discordmoreurl=", "The url to read more about said post.",  urlParam => discordMoreURL = urlParam },
+        };
         static public string GetDiscordStringTruncated(string str, int length, out bool truncated)
         {
             truncated = false;
@@ -53,12 +58,6 @@ namespace Nightfire_Source_Update_Builder
 
         static public bool SetupDiscordDetails(string[] args)
         {
-            var options = new OptionSet {
-                { "discordid=", "The discord id.",  (ulong idParam) => discordId = idParam },
-                { "discordtoken=", "The discord token.",  tokenParam => discordToken = tokenParam },
-                { "discordmoreurl=", "The url to read more about said post.",  urlParam => discordMoreURL = urlParam },
-            };
-
             List<string> extra;
             try
             {

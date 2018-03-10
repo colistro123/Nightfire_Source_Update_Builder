@@ -48,7 +48,7 @@ namespace Nightfire_Source_Update_Builder
         {
             if (args.Length == 0)
             {
-                CloudflarePurge.showCommandParametersHelp(CloudflarePurge.options);
+                HelpParameters.showCommandParametersHelp();
                 throw new ArgumentException($"The parameters (args) must not be null, forward some parameters to the application. Execution will now stop.", "args");
             }
 

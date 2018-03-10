@@ -19,6 +19,13 @@ namespace Nightfire_Source_Update_Builder
         public static string diffsUrl = String.Empty;
         public static string versionFileName = "version.txt";
 
+        // these are the available options, note that they set the variables
+        public static OptionSet options = new OptionSet {
+                { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
+                { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; setBuildName(genDiffsOnly ? getBuildNameDiffs() : getBuildName()); } },
+                { "diffsurl=", "Passes a url to download the changeset from",  n => { diffsUrl = n; } },
+        };
+
         public static bool isBuildNameNullOrEmpty()
         {
             return BuildName.Length < 1;
@@ -56,13 +63,6 @@ namespace Nightfire_Source_Update_Builder
 
         public static string SetupReleaseBuildName(string[] args)
         {
-            // these are the available options, note that they set the variables
-            var options = new OptionSet {
-                { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
-                { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; setBuildName(genDiffsOnly ? getBuildNameDiffs() : getBuildName()); } },
-                { "diffsurl=", "Passes a url to download the changeset from",  n => { diffsUrl = n; } },
-            };
-
             List<string> extra;
             try
             {

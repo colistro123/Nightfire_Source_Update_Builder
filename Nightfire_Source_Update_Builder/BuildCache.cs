@@ -16,7 +16,9 @@ namespace Nightfire_Source_Update_Builder
         public static string INVALID_STRING = "Invalid";
         public static bool genDiffsOnly = false;
         public static bool performCompression = true;
+        public static bool bootstrapOnly = false;
         public static string diffsUrl = String.Empty;
+        public static string exeName = String.Empty;
         public static string versionFileName = "version.txt";
 
         // these are the available options, note that they set the variables
@@ -24,6 +26,8 @@ namespace Nightfire_Source_Update_Builder
                 { "r|releasebuild=", "Tells the program which build we're generating, master / upcoming",  n => BuildName = n },
                 { "gendiffsonly", "Tells the program to only generate differences",  v => { genDiffsOnly = true;  performCompression = false; setBuildName(genDiffsOnly ? getBuildNameDiffs() : getBuildName()); } },
                 { "diffsurl=", "Passes a url to download the changeset from",  n => { diffsUrl = n; } },
+                { "exename=", "The updater exe name used to check integrity",  n => { exeName = n; } },
+                { "bonly", "Tells the program to only do the bootstrap verification process and exit",  v => { bootstrapOnly = true; } },
         };
 
         public static bool isBuildNameNullOrEmpty()
@@ -83,6 +87,37 @@ namespace Nightfire_Source_Update_Builder
             return getBuildName();
         }
 
+        public static void VerifyBootstrapper(string mainChSetFolderName)
+        {
+            if (exeName.Length < 1)
+            {
+                Utils.LogInfo("-exename argument is null, empty or was not provided, not running bootstrapper checks...\n"); //Let them know and continue...
+                return;
+            }
+
+            FileInfo fStream = new FileInfo(exeName);
+            string fStreamPath = Path.GetFullPath(exeName);
+
+            string targetDir = Path.GetFullPath(Path.Combine(mainChSetFolderName, "bootstrapper"));
+            string targetFilePath = Path.Combine(targetDir, exeName);
+
+            if (!File.Exists(fStreamPath))
+                Utils.FatalError($"File: \"{fStreamPath}\" not found so it won't be copied to \"{targetDir}\", exiting...\n");
+
+            Directory.CreateDirectory(targetDir);
+
+            Utils.FStreamReplace(fStream, targetFilePath);
+
+            //Last but not least gen the new caches.xml file in the target directory containing the hash of the exe.
+            var hashFuncs = new Hashing();
+            string SHA1Hash = hashFuncs.genFileHash(targetFilePath); //Generate our sha1 file hash which we'll use later on
+
+            XMLMgr.WriteCacheXML(Path.Combine(targetDir, "caches.xml"), mainChSetFolderName, SHA1Hash);
+
+            if (bootstrapOnly)
+                Utils.LogInfo("Bootstrapping done, the application will now exit (-bonly argument was passed)!\n", true);
+        }
+
         public static void BuildCacheDirectory(string DirName)
         {
             Directory.CreateDirectory(Path.GetFullPath(DirName)); //Create the dir with the changeset name one directory back
@@ -99,7 +134,7 @@ namespace Nightfire_Source_Update_Builder
             {
                 string newFilePath = Path.GetFullPath(Path.Combine(cacheDirName, fileName));
                 Directory.CreateDirectory(Path.GetDirectoryName(newFilePath));
-                fStream.CopyTo(newFilePath);
+                Utils.FStreamReplace(fStream, newFilePath);
             }
         }
 

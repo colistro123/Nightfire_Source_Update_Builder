@@ -41,6 +41,8 @@ namespace Nightfire_Source_Update_Builder
 
             bool changeSetExists = chSet.DoesChangeSetExist(ChangeSets.CHANGESET_TYPES.CHANGESET_INTEGRITY_OLD);
 
+            BuildCache.VerifyBootstrapper(chSetFolderName); //First and foremost check the bootstrapper version
+
             DiscordNotify.FormatDiscordPost($"\ud83d\udd27 Building a new {chSetFolderName} update!");
             DiscordNotify.SendDiscordPost(DiscordNotify.discordId, DiscordNotify.discordToken).Wait();
 

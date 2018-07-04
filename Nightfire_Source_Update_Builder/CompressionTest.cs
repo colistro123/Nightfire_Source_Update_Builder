@@ -37,7 +37,6 @@ namespace Nightfire_Source_Update_Builder
                                CompressionMode.Compress))
                             {
                                 originalFileStream.CopyTo(compressionStream);
-
                             }
                         }
                         FileInfo info = new FileInfo(Path.GetFullPath(Path.Combine(directoryPath, fileToCompress.Name) + ".gz"));

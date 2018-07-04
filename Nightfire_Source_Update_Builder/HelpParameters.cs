@@ -28,10 +28,7 @@ namespace Nightfire_Source_Update_Builder
         public static void showCommandParametersHelp()
         {
             Console.WriteLine("Help:\n");
-            foreach (OptionSet opt in AvailableOptions)
-            {
-                opt.WriteOptionDescriptions(Console.Out);
-            }
+            AvailableOptions.ToList().ForEach(s => { s.WriteOptionDescriptions(Console.Out); });
         }
         public static bool RunHelpParams(string[] args)
         {

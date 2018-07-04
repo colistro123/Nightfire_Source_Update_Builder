@@ -31,5 +31,26 @@ namespace Nightfire_Source_Update_Builder
             }
             return cacheList;
         }
+
+        public static void WriteCacheXML(string fileName, string id, string version)
+        {
+            using (XmlWriter writer = XmlWriter.Create(fileName, xmlWriterSettings))
+            {
+                writer.WriteStartDocument();
+                {
+                    writer.WriteStartElement("Caches");
+                    {
+                        writer.WriteStartElement("Cache");
+                        {
+                            writer.WriteAttributeString("ID", id);
+                            writer.WriteAttributeString("Version", version);
+                        }
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndDocument();
+            }
+        }
     }
 }

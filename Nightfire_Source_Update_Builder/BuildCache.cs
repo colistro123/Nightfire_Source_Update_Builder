@@ -114,6 +114,9 @@ namespace Nightfire_Source_Update_Builder
 
             XMLMgr.WriteCacheXML(Path.Combine(targetDir, "caches.xml"), mainChSetFolderName, SHA1Hash);
 
+            //Evaluate if it should be compressed or not
+            evalShouldCompress(targetFilePath, targetDir);
+
             if (bootstrapOnly)
                 Utils.LogInfo("Bootstrapping done, the application will now exit (-bonly argument was passed)!\n", true);
         }
